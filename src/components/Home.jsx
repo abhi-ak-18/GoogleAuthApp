@@ -1,9 +1,23 @@
-import { StyleSheet, Text, View, Button, Image } from 'react-native';
-import React from 'react';
+import { StyleSheet, Text, View, Button, Image, FlatList, Dimensions } from 'react-native';
+import React, { useState, useEffect } from 'react';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
+
+const windowWidth = Dimensions.get('window').width;
 
 const Home = ({ route, navigation }) => {
   const { name, imageUrl } = route.params;
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const url = 'https://graph.instagram.com/me/media?fields=id,media_type,media_url,username,timestamp&access_token={sixty_days_access_token_here}';
+
+  useEffect(() => {
+    fetch(url)
+      .then((response) => response.json())
+      .then((json) => setData(json.data))
+      .catch((error) => console.error(error))
+      .finally(() => setLoading(false));
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -15,6 +29,10 @@ const Home = ({ route, navigation }) => {
     }
   };
 
+  const renderPostItem = ({ item }) => (
+    <Image source={{ uri: item.media_url }} style={styles.postImage} />
+  );
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Welcome, {name}!</Text>
@@ -23,6 +41,13 @@ const Home = ({ route, navigation }) => {
         <Text style={styles.nameText}>Hello, {name}!</Text>
       </View>
       <Button title="Logout" onPress={handleLogout} />
+      <FlatList
+        data={data}
+        keyExtractor={(item) => item.id}
+        renderItem={renderPostItem}
+        contentContainerStyle={styles.flatListContainer}
+        numColumns={3}
+      />
     </View>
   );
 };
@@ -53,6 +78,16 @@ const styles = StyleSheet.create({
   nameText: {
     fontSize: 18,
     color: '#555',
+  },
+  flatListContainer: {
+    paddingTop: 20,
+    paddingHorizontal: 10,
+  },
+  postImage: {
+    width: windowWidth / 3 - 20, // Adjusted width calculation
+    height: windowWidth / 3 - 20, // Adjusted height calculation
+    margin: 5,
+    resizeMode: 'cover',
   },
 });
 
