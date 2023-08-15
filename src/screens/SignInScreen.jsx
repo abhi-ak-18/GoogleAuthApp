@@ -2,6 +2,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import React, { useState } from 'react';
 import { GoogleSignin, GoogleSigninButton, statusCodes } from '@react-native-google-signin/google-signin';
 import auth from '@react-native-firebase/auth';
+import {_storeIntoAsyncStorage} from '../components/AsyncStorage';
 
 const SignInScreen = ({ navigation }) => {
 
@@ -20,10 +21,11 @@ const SignInScreen = ({ navigation }) => {
         userInfo.idToken,
       );
       auth().signInWithCredential(googleCredentials);
-      console.log('UserInfo:', userInfo);
+      //console.log('UserInfo:', userInfo);
       setIsSignedIn(true);
       console.log('Sign in successful for user:', userInfo.user.email);
-      navigation.navigate('Home', {
+      _storeIntoAsyncStorage('user', JSON.stringify(userInfo)); // storing data in to async storage
+      navigation.replace('Home', {
         name: userInfo.user.name,
         imageUrl: userInfo.user.photo,
       });

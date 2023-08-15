@@ -1,28 +1,28 @@
 import { StyleSheet, Text, View, Button, Image, FlatList, Dimensions } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const windowWidth = Dimensions.get('window').width;
 
 const Home = ({ route, navigation }) => {
   const { name, imageUrl } = route.params;
   const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
 
-  const url = 'https://graph.instagram.com/me/media?fields=id,media_type,media_url,username,timestamp&access_token={sixty_days_access_token_here}';
+  const url = 'https://graph.instagram.com/me/media?fields=id,media_type,media_url,username,timestamp&access_token=IGQVJYRmpWcC1kUVVvNzVjVzFoa0NkaTRtaHl0ZAlFSUExvUzlVZAFprblY0UGNsUXA3dXVSQ1luY00tTnFtcGtWbTA5d1FhVHllOHZAvVkVSZA2VXeHNaYnVRUjlmOW5vU2lneDFSWVRB';
 
   useEffect(() => {
     fetch(url)
       .then((response) => response.json())
       .then((json) => setData(json.data))
       .catch((error) => console.error(error))
-      .finally(() => setLoading(false));
   }, []);
 
   const handleLogout = async () => {
     try {
       await GoogleSignin.signOut();
-      navigation.navigate('SignInScreen');
+      await AsyncStorage.removeItem('user');
+      navigation.replace('SignInScreen');
       console.log('Logged out successfully');
     } catch (error) {
       console.log('Error during logout:', error);
