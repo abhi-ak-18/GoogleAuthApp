@@ -9,7 +9,7 @@ const Home = ({ route, navigation }) => {
   const { name, imageUrl } = route.params;
   const [data, setData] = useState([]);
 
-  const url = 'https://graph.instagram.com/me/media?fields=id,media_type,media_url,username,timestamp&access_token=IGQVJYRmpWcC1kUVVvNzVjVzFoa0NkaTRtaHl0ZAlFSUExvUzlVZAFprblY0UGNsUXA3dXVSQ1luY00tTnFtcGtWbTA5d1FhVHllOHZAvVkVSZA2VXeHNaYnVRUjlmOW5vU2lneDFSWVRB';
+  const url = 'https://graph.instagram.com/me/media?fields=id,media_type,media_url,username,timestamp&access_token={access_token_here}';
 
   useEffect(() => {
     fetch(url)
